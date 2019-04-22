@@ -4,3 +4,10 @@ config.json
 bills_2019.csv
 Analysis.ipynb
 legislators_2019.csv
+legislators_sm_2019.csv
+legislators.csv
+legislators_sm_2019.csv
+matrix.csv
+legislators_sm_2019.csv
+*.csv
+*.csv
