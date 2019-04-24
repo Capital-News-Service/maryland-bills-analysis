@@ -27,7 +27,7 @@ var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-var color = d3.scaleOrdinal(d3.schemeSet1);
+
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
@@ -52,7 +52,7 @@ d3.json("data.json", function(error, graph) {
     
   var circles = node.append("circle")
       .attr("r", 5)
-      .attr("fill", function(d) { return color(d.group); })
+      .attr("fill", function(d) { if (d.group === 1){return 'blue'}return 'red'; })
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
