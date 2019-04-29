@@ -1,8 +1,16 @@
-d3.sankey = function() {
+// https://github.com/vasturiano/d3-sankey Version 0.4.2.
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array'), require('d3-collection'), require('d3-interpolate')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'd3-array', 'd3-collection', 'd3-interpolate'], factory) :
+  (factory((global.d3 = global.d3 || {}),global.d3,global.d3,global.d3));
+}(this, (function (exports,d3Array,d3Collection,d3Interpolate) { 'use strict';
+
+var sankey = function() {
   var sankey = {},
       nodeWidth = 24,
       nodePadding = 8,
       size = [1, 1],
+      align = 'justify', // left, right, center or justify
       nodes = [],
       links = [];
 
@@ -36,6 +44,12 @@ d3.sankey = function() {
     return sankey;
   };
 
+  sankey.align = function(_) {
+    if (!arguments.length) return align;
+    align = _.toLowerCase();
+    return sankey;
+  };
+
   sankey.layout = function(iterations) {
     computeNodeLinks();
     computeNodeValues();
@@ -56,7 +70,7 @@ d3.sankey = function() {
     function link(d) {
       var x0 = d.source.x + d.source.dx,
           x1 = d.target.x,
-          xi = d3.interpolateNumber(x0, x1),
+          xi = d3Interpolate.interpolateNumber(x0, x1),
           x2 = xi(curvature),
           x3 = xi(1 - curvature),
           y0 = d.source.y + d.sy + d.dy / 2,
@@ -97,13 +111,13 @@ d3.sankey = function() {
   function computeNodeValues() {
     nodes.forEach(function(node) {
       node.value = Math.max(
-        d3.sum(node.sourceLinks, value),
-        d3.sum(node.targetLinks, value)
+        d3Array.sum(node.sourceLinks, value),
+        d3Array.sum(node.targetLinks, value)
       );
     });
   }
 
-   // Iteratively assign the breadth (x-position) for each node.
+  // Iteratively assign the breadth (x-position) for each node.
   // Nodes are assigned the maximum breadth of incoming neighbors plus one;
   // nodes with no incoming links are assigned breadth zero, while
   // nodes with no outgoing links are assigned the maximum breadth.
@@ -111,7 +125,7 @@ d3.sankey = function() {
     var remainingNodes = nodes,
         nextNodes,
         x = 0,
-        reverse = true; // Reverse traversal direction
+        reverse = (align === 'right'); // Reverse traversal direction
 
     while (remainingNodes.length) {
       nextNodes = [];
@@ -138,15 +152,25 @@ d3.sankey = function() {
       });
     }
 
+    if (align === 'center') {
+      moveSourcesRight();
+    }
+    if (align === 'justify') {
+      moveSinksRight(x);
+    }
+
     scaleNodeBreadths((size[0] - nodeWidth) / (x - 1));
   }
 
   function moveSourcesRight() {
-    nodes.forEach(function(node) {
-      if (!node.targetLinks.length) {
-        node.x = d3.min(node.sourceLinks, function(d) { return d.target.x; }) - 1;
-      }
-    });
+    nodes.slice()
+      // Pack nodes from right to left
+      .sort(function(a, b) { return b.x - a.x; })
+      .forEach(function(node) {
+        if (!node.targetLinks.length) {
+          node.x = d3Array.min(node.sourceLinks, function(d) { return d.target.x; }) - 1;
+        }
+      });
   }
 
   function moveSinksRight(x) {
@@ -164,9 +188,9 @@ d3.sankey = function() {
   }
 
   function computeNodeDepths(iterations) {
-    var nodesByBreadth = d3.nest()
+    var nodesByBreadth = d3Collection.nest()
         .key(function(d) { return d.x; })
-        .sortKeys(d3.ascending)
+        .sortKeys(d3Array.ascending)
         .entries(nodes)
         .map(function(d) { return d.values; });
 
@@ -181,8 +205,8 @@ d3.sankey = function() {
     }
 
     function initializeNodeDepth() {
-      var ky = d3.min(nodesByBreadth, function(nodes) {
-        return (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value);
+      var ky = d3Array.min(nodesByBreadth, function(nodes) {
+        return (size[1] - (nodes.length - 1) * nodePadding) / d3Array.sum(nodes, value);
       });
 
       nodesByBreadth.forEach(function(nodes) {
@@ -198,10 +222,10 @@ d3.sankey = function() {
     }
 
     function relaxLeftToRight(alpha) {
-      nodesByBreadth.forEach(function(nodes, breadth) {
+      nodesByBreadth.forEach(function(nodes) {
         nodes.forEach(function(node) {
           if (node.targetLinks.length) {
-            var y = d3.sum(node.targetLinks, weightedSource) / d3.sum(node.targetLinks, value);
+            var y = d3Array.sum(node.targetLinks, weightedSource) / d3Array.sum(node.targetLinks, value);
             node.y += (y - center(node)) * alpha;
           }
         });
@@ -216,7 +240,7 @@ d3.sankey = function() {
       nodesByBreadth.slice().reverse().forEach(function(nodes) {
         nodes.forEach(function(node) {
           if (node.sourceLinks.length) {
-            var y = d3.sum(node.sourceLinks, weightedTarget) / d3.sum(node.sourceLinks, value);
+            var y = d3Array.sum(node.sourceLinks, weightedTarget) / d3Array.sum(node.sourceLinks, value);
             node.y += (y - center(node)) * alpha;
           }
         });
@@ -292,7 +316,14 @@ d3.sankey = function() {
   }
 
   function center(node) {
-    return node.y + node.dy / 2;
+    if (node.name.includes("Passed")){
+      return node.y + node.dy / 3.5;
+    }else if (node.name.includes("Engrossed")){
+        return node.y + (node.dy / 2.5);
+    }else if (node.name.includes("Introduced")){
+        return node.y + (node.dy / 2.5);
+    }
+    return node.y + (node.dy / 5);
   }
 
   function value(link) {
@@ -301,3 +332,9 @@ d3.sankey = function() {
 
   return sankey;
 };
+
+exports.sankey = sankey;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));

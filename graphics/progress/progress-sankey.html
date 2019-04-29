@@ -51,10 +51,10 @@
   <div id="chart" />
   <script type="text/javascript">
     var margin = {
-        top: 1,
-        right: 1,
-        bottom: 6,
-        left: 1
+        top: 10,
+        right: 60,
+        bottom: 10,
+        left: 120
       },
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
@@ -203,7 +203,22 @@
         })
         .attr("width", sankey.nodeWidth())
         .style("fill", function(d) {
-          return d.color = color(d.name.replace(/ .*/, ""));
+          if (d.name.includes('Democrat') | d.name.includes('Speaker') | d.name.includes('President')){
+            return d.color = 'blue';
+          }else if (d.name.includes('Republicans')){
+            return d.color = 'red';
+          }else if (d.name.includes('Committees')){
+            return d.color = 'purple';
+          }else if (d.name.includes('County')){
+            return d.color = 'orange';
+          }else if (d.name.includes('Introduced')){
+            return d.color = '#447a34';
+          }else if (d.name.includes('Engrossed')){
+            return d.color = '#21b42b';
+          }else if (d.name.includes('Passed')){
+            return d.color = '#22ff00';
+          }
+          return d.color = 'white';
         })
         .append("title")
         .text(function(d) {
@@ -213,7 +228,7 @@
       node.append("text")
         .attr("x", -6)
         .attr("y", function(d) {
-          return d.dy / 2;
+          return (d.dy / 2);
         })
         .attr("dy", ".35em")
         .attr("text-anchor", "end")
@@ -222,7 +237,21 @@
           return d.name;
         })
         .filter(function(d) {
-          return d.x < width / 2;
+          return d.x < 0;
+        })
+        .attr("x", 6 + sankey.nodeWidth())
+        .attr("text-anchor", "start");
+
+        node.append("text")
+        .attr("x", -6)
+        .attr("y", function(d) {
+          return d.dy / 2;
+        })
+        .attr("dy", ".35em")
+        .attr("text-anchor", "end")
+        .attr("transform", null)
+        .text(function(d) {
+          return format(d.value);
         })
         .attr("x", 6 + sankey.nodeWidth())
         .attr("text-anchor", "start");
