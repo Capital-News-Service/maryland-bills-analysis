@@ -1,11 +1,11 @@
 {"nodes":[
 {"name":"Speaker of the House"},
-{"name":"County Delegates"},
+{"name":"Local House Delegations"},
 {"name":"House Committees"},
 {"name":"House Democrats"},
 {"name":"House Republicans"},
 {"name":"Senate President"},
-{"name":"County Senators"},
+{"name":"Local Senate Delegations"},
 {"name":"Senate Committees"},
 {"name":"Senate Democrats"},
 {"name":"Senate Republicans"},
@@ -29,5 +29,5 @@
 {"source":10,"target":12,"value":630},
 {"source":11,"target":13,"value":494},
 {"source":12,"target":14,"value":462},
-{"source":13,"target":14,"value":403}
+{"source":13,"target":14,"value":404}
 ]}

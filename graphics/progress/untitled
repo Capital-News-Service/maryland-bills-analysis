@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>Sankey Layout Alignment</title>
+<style>
+  body {
+    font: 16px Sans-serif;
+  }
+
+  #chart {
+    height: 500px;
+      font-size: 11px;
+      width: 960px;
+      margin: auto;
+  }
+  .node rect {
+    fill-opacity: .9;
+    shape-rendering: crispEdges;
+  }
+
+  svg {
+    width:100%;
+  }
+
+  .node text {
+    font: 10px sans-serif;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff;
+  }
+
+  .link {
+    fill: none;
+    stroke: darkblue;
+    stroke-opacity: .2;
+  }
+
+  .link:hover {
+    stroke-opacity: .5;
+  }
+</style>
+
+<body>
+
+  <div id="chart"></div>
+
+  <br/>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.2.0/d3.min.js"></script>
+  <script src="sankey.js"></script>
+
+  <script>
+    var margin = {
+        top: 1,
+        right: 1,
+        bottom: 6,
+        left: 1
+      },
+      width = 960 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;,
+      animDuration = 800;
+
+    var formatNumber = d3.format(",.0f"),
+      format = function(d) {
+        return formatNumber(d) + " TWh";
+      },
+      color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    var svg = d3.select("#chart").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var links = svg.append("g"),
+        nodes = svg.append("g");
+
+    var sankey = d3.sankey()
+      .nodeWidth(15)
+      .nodePadding(10)
+      .size([width, height])
+      .align('justify');
+
+    var path = sankey.link();
+
+    d3.json("progress.json", function(energy) {
+      sankey
+        .nodes(energy.nodes)
+        .links(energy.links)
+        .layout(32);
+
+      d3Digest();
+    });
+
+    function d3Digest() {
+
+      var link = links.selectAll(".link")
+        .data(sankey.links());
+
+      var newLink = link.enter().append("path")
+          .attr("class", "link")
+          .style("stroke-width", function (d) {
+            return Math.max(1, d.dy) + 'px';
+          });
+
+      newLink.append("title")
+        .text(function (d) {
+          return d.source.name + " → " + d.target.name + "\n" + format(d.value);
+        });
+
+      link = newLink.merge(link);
+
+      link.transition().duration(animDuration)
+        .attr("d", path)
+        .style("stroke-width", function (d) {
+          return Math.max(1, d.dy) + 'px';
+        });
+
+      var node = nodes.selectAll(".node")
+        .data(sankey.nodes());
+
+      var newNode = node.enter().append("g")
+        .attr("class", "node");
+
+      newNode.attr("transform", function (d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+
+      node.transition().duration(animDuration)
+        .attr("transform", function (d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
+
+      node = newNode.merge(node);
+
+      newNode.append('rect');
+      newNode.append('text');
+
+      newNode.select("rect")
+        .attr("width", sankey.nodeWidth())
+        .attr("height", function (d) {
+          return d.dy;
+        })
+        .append("title")
+          .text(function (d) {
+            return d.name + "\n" + format(d.value);
+          });
+
+      node.select("rect")
+        .style("fill", function (d) {
+          return d.color = color(d.name.replace(/ .*/, ""));
+        })
+        .style("stroke", function (d) {
+          return d3.rgb(d.color).darker(2);
+        })
+        .transition().duration(animDuration)
+          .attr("height", function (d) {
+            return d.dy;
+          });
+
+      newNode.select("text")
+        .attr("dy", ".35em")
+        .attr("transform", null)
+        .attr("y", function (d) {
+          return d.dy / 2;
+        });
+
+      node.select("text")
+        .text(function (d) {
+          return d.name;
+        })
+        .attr("x", -6)
+        .attr("text-anchor", "end")
+        .filter(function (d) {
+          return d.x < width / 2;
+        })
+          .attr("x", 6 + sankey.nodeWidth())
+          .attr("text-anchor", "start");
+
+      node.select('text').transition().duration(animDuration)
+        .attr("y", function (d) {
+          return d.dy / 2;
+        });
+    }
+
+    // Radio button change
+    d3.selectAll('.sankey-align').on('change', function() {
+      sankey.align(this.value)
+            .layout(32);
+      d3Digest();
+    });
+
+  </script>
