@@ -17,11 +17,17 @@ text {
   font-size: 10px;
 }
 
+svg {
+  border:solid;
+}
+
 </style>
-<svg width="2000" height="2000"></svg>
+<svg width="600" height="600"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="//d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
 <script>
+
+var radius = 15;
 
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
@@ -72,8 +78,12 @@ d3.json("data-house.json", function(error, graph) {
       .nodes(graph.nodes)
       .on("tick", ticked);
 
+  simulation
+      .links(graph.links)
+      .on("tick", ticked);
+
   simulation.force("link")
-      .links(graph.links);
+      .links(graph.links)
 
   function ticked() {
     link
@@ -84,9 +94,11 @@ d3.json("data-house.json", function(error, graph) {
 
     node
         .attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
+          return "translate(" + Math.max(radius, Math.min(width - radius, d.x)) + "," + Math.max(radius, Math.min(height - radius, d.y)) + ")";
         })
+
   }
+
 });
 
 function dragstarted(d) {

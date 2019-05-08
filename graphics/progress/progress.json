@@ -11,8 +11,8 @@
 {"name":"Senate Republicans"},
 {"name":"House Bills Introduced"},
 {"name":"Senate Bills Introduced"},
-{"name":"House Bills Engrossed"},
-{"name":"Senate Bills Engrossed"},
+{"name":"House Final Vote"},
+{"name":"Senate Final Vote"},
 {"name":"Passed"}
 ],
 "links":[
