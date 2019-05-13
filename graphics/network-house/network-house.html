@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<head>
 <style>
 
 .links line {
@@ -9,113 +10,343 @@
 
 .nodes circle {
   stroke: #fff;
-  stroke-width: 1.5px;
+  stroke-width: 2px;
 }
 
 text {
-  font-family: sans-serif;
-  font-size: 10px;
+  font-family: sans-serif bold;
+  font-size: 12px;
 }
 
-svg {
-  border:solid;
+#circle circle {
+  fill: none;
+  pointer-events: all;
 }
 
+.group path {
+  fill-opacity: .5;
+}
+
+path.chord {
+  stroke: #000;
+  stroke-width: .25px;
+}
+
+#circle:hover path.fade {
+  display: none;
+}
+
+div#source {
+  font-family:'Poppins';
+  text-align: right;
+  padding-top: 10px;
+  font-size: 16px;
+  color: gray;
+}
+
+a{
+  color: inherit;
+    text-decoration: inherit;
+}
+
+#chart{
+  margin-top:10px;
+}
+
+.highcharts-title {
+  font-family: 'Droid Serif', serif;
+  font-weight:600;
+  font-size:36pt;
+  fill:#2c2c2c;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  
+}
+.highcharts-subtitle {
+  font-family: 'Poppins', sans-serif;
+    color: grey;
+    font-weight: 300;
+    font-size: 12pt;
+}
+
+/*Styles the div that holds the highchart */
+div#container {
+  margin-top:20px;
+  margin-bottom:20px;
+  padding-left:20px;
+  padding-top:20px;
+  padding-right:30px;
+  padding-bottom:10px;
+  border-left:1px solid black;
+  border-bottom:14pt solid black;
+  border-top:1px solid black;
+  border-right:1px solid black;
+  box-shadow:5px 5px 10px gainsboro;
+  width: 600px; 
+  margin-left:auto;
+  margin-right:auto;
+}
+
+#line {
+  background: #fbd603;
+  width: 100%;
+  height: 7px;
+  margin-top: 6px;
+}
+  h5 {
+      font-family:'Droid Serif', serif;
+      font-weight:400;
+      font-size:16pt;
+      color:#2c2c2c;
+      text-align:left;
+    }
+
+      div.tooltip {
+      position: absolute;
+      background-color: white;
+      max-width; 200px;
+      height: auto;
+      padding: 1px;
+      border-style: solid;
+      border-radius: 4px;
+      border-width: 1px;
+      box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+      pointer-events: none;
+      text-align:justify;
+  }
+
+   #graphic {
+        width:600px;
+        height:600px;
+      }
+
+  .our-text {
+        x: 12;
+        y: 3;
+        color:red;
+      }
+
+  @media (min-width:1020px) {  
+      div#container {
+        width:1000px;
+      }
+      #graphic {
+        width: 1000px;
+      }
+    }
 </style>
-<svg width="600" height="600"></svg>
+</head>
+
+<body>
+<div id="container">
+      <h1 class="highcharts-title">House relationships centered around Democrats and the Speaker of the House </h1>
+
+      <text class="highcharts-subtitle" y="60">
+        <tspan>BY JAKE GLUCK</tspan>
+        <!-- ^^ PUT YOUR NAME HERE, TAKE CREDIT FOR YOUR COOL WORK ^^ -->
+        <tspan onclick="location.href=&quot;http://cnsmaryland.org&quot;"> | CAPITAL NEWS SERVICE</tspan>
+        <br>
+      <div id="line"></div>
+        <!--<span style="height:8px; font-size:4pt; background-color:#fbd603 ; color:#fbd603 ;">____________________________________________________________________________________________________________________________</span>-->
+      </text>
+      <h5>
+        A line connecting two legislators represents at least 15 co-sponsorships between the two delegates in the 2019 legislative session.
+        A co-sponsor is an additional lawmaker or lawmakers, aside from the primary sponsors, who sign on to voice their support for a piece of legislation.
+        Hover over a relationship to see the number of cos sponsorships.
+
+
+      </h5>
+      <svg id = "graphic" width="600" height="600" style="border:solid;"></svg>
+      <div id="source"><text><a href="https://legiscan.com/"><tspan>Source: LegiScan</tspan></a></text></div>
+      <!-- ^^ PUT YOUR SOURCE HERE AND LINK IT^^ -->
+
+    </div>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="//d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
 <script>
-
-var radius = 15;
-
-var svg = d3.select("svg"),
+  var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-
-
-var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(100).strength(1))
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 2, height / 2));
-
-d3.json("data-house.json", function(error, graph) {
-  if (error) throw error;
-
-  var link = svg.append("g")
-      .attr("class", "links")
-    .selectAll("line")
-    .data(graph.links)
-    .enter().append("line")
-      .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-  var node = svg.append("g")
-      .attr("class", "nodes")
-    .selectAll("g")
-    .data(graph.nodes)
-    .enter().append("g")
-    
-  var circles = node.append("circle")
-      .attr("r", 5)
-      .attr("fill", function(d) { if (d.group === 1){return 'red'}return 'blue'; })
-      .call(d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended));
-
-  var lables = node.append("text")
-      .text(function(d) {
-        return d.id;
-      })
-      .attr('x', 6)
-      .attr('y', 3);
-
-  node.append("title")
-      .text(function(d) { return d.id; });
-
-  simulation
-      .nodes(graph.nodes)
-      .on("tick", ticked);
-
-  simulation
-      .links(graph.links)
-      .on("tick", ticked);
-
-  simulation.force("link")
-      .links(graph.links)
-
-  function ticked() {
-    link
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    node
-        .attr("transform", function(d) {
-          return "translate(" + Math.max(radius, Math.min(width - radius, d.x)) + "," + Math.max(radius, Math.min(height - radius, d.y)) + ")";
-        })
-
+function makeGraphic(ifDestroy){
+  if (ifDestroy){
+    // svg.selectAll("*").remove();
+    svg.attr("transform",
+      "translate(" + d3.event.translate + ")"+ " scale(" + d3.event.scale + ")");
   }
 
-});
 
-function dragstarted(d) {
-  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-  d.fx = d.x;
-  d.fy = d.y;
+
+
+  svg.attr("viewBox", [-width / 2, -height / 2, width, height]);
+
+  d3.json("data-house.json", function(error, graph) {
+    if (error) throw error;
+
+    var tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+    var link = svg.append("g")
+        .attr("class", "links")
+      .selectAll("line")
+      .data(graph.links)
+      .enter().append("line")
+        .attr("stroke-width", function(d) { return Math.sqrt(d.value); })
+        .on('mouseover.tooltip', function(d) {
+          tooltip.transition()
+            .duration(300)
+            .style("opacity", .8);
+          tooltip.html("Delegate A: "+ d.source.id + 
+                       "<br>Delegate B: " + d.target.id +
+                      "<br>Total Co Sponsorships: "  + d.value)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY + 10) + "px");
+        })
+        .on("mouseout.tooltip", function() {
+          tooltip.transition()
+            .duration(100)
+            .style("opacity", 0);
+        })
+        .on('mouseout.fade', fade(1))
+        .on("mousemove", function() {
+          tooltip.style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY + 10) + "px");
+        });
+
+    var node = svg.append("g")
+        .attr("class", "nodes")
+      .selectAll("g")
+      .data(graph.nodes)
+      .enter().append("g")
+      .on('mouseover.tooltip', function(d) {
+          tooltip.transition()
+            .duration(300)
+            .style("opacity", .8);
+          tooltip.html("Delegate: " + d.id + "<br>Party: " + getParty(d.group))
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY + 10) + "px");
+        })
+      .on('mouseover.fade', fade(0.1))
+      .on("mouseout.tooltip", function() {
+          tooltip.transition()
+            .duration(100)
+            .style("opacity", 0);
+        })
+      .on('mouseout.fade', fade(1))
+        .on("mousemove", function() {
+          tooltip.style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY + 10) + "px");
+        })
+      .on('dblclick',releasenode);
+      
+    var circles = node.append("circle")
+        .attr("r", 5)
+        .attr("fill", function(d) { if (d.group === 1){return 'red'}return 'blue'; })
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    var lables = node.append("text")
+        .attr("class", "our-text")
+        .text(function(d) {
+          return d.id;
+        })
+        .attr('x', 9)
+        .attr('y', 3);
+
+    const simulation = d3.forceSimulation(graph.nodes)
+        .force("link", d3.forceLink(graph.links).id(d => d.id).distance(100))
+        .force("charge", d3.forceManyBody().strength(-500))
+        .force("x", d3.forceX().strength(.2))
+        .force("y", d3.forceY().strength(.2));
+
+
+    simulation
+        .nodes(graph.nodes)
+        .on("tick", ticked);
+
+    simulation.force("link")
+        .links(graph.links);
+
+    function ticked() {
+      link
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+      node
+          .attr("transform", function(d) {
+            return "translate(" + d.x + "," + d.y + ")";
+          })
+    }
+
+    function getParty(x) {
+      if (x == 2){
+        return "Democrat"
+      }else{
+        return "Republican"
+      }
+    }
+
+    function releasenode(d) {
+      d.fx = null;
+      d.fy = null;
+    }
+    function dragstarted(d) {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d) {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+
+    const linkedByIndex = {};
+    graph.links.forEach(d => {
+      linkedByIndex[`${d.source.index},${d.target.index}`] = 1;
+    });
+
+    function isConnected(a, b) {
+      return linkedByIndex[`${a.index},${b.index}`] || linkedByIndex[`${b.index},${a.index}`] || a.index === b.index;
+    }
+
+    function fade(opacity) {
+      return d => {
+        node.style('stroke-opacity', function (o) {
+          const thisOpacity = isConnected(d, o) ? 1 : opacity;
+          this.setAttribute('fill-opacity', thisOpacity);
+          return thisOpacity;
+        });
+
+        link.style('stroke-opacity', o => (o.source === d || o.target === d ? 1 : opacity));
+
+      };
+    }
+  });
 }
 
-function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-}
+makeGraphic(false);
 
-function dragended(d) {
-  if (!d3.event.active) simulation.alphaTarget(0);
-  d.fx = null;
-  d.fy = null;
-}
+window.onresize = resizeMaps;
+
+      function resizeMaps() {
+
+
+          // if (document.documentElement.clientWidth < 800) {
+          makeGraphic(true);
+      }
 
 </script>
+</body>

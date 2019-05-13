@@ -7,6 +7,71 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.js"></script>
   <script src="sankey.js"></script>
   <style>
+    div#source {
+        font-family:'Poppins';
+        text-align: right;
+        padding-top: 10px;
+        font-size: 16px;
+        color: gray;
+    }
+
+    a{
+      color: inherit;
+        text-decoration: inherit;
+    }
+
+
+    .highcharts-title {
+      font-family: 'Droid Serif', serif;
+      font-weight:600;
+      font-size:36pt;
+      fill:#2c2c2c;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      
+    }
+    .highcharts-subtitle {
+      font-family: 'Poppins', sans-serif;
+        color: grey;
+        font-weight: 300;
+        font-size: 12pt;
+    }
+
+  /*Styles the div that holds the highchart */
+  div#container {
+    margin-top:20px;
+    margin-bottom:20px;
+    padding-left:20px;
+    padding-top:20px;
+    padding-right:30px;
+    padding-bottom:10px;
+    border-left:1px solid black;
+    border-bottom:14pt solid black;
+    border-top:1px solid black;
+    border-right:1px solid black;
+    box-shadow:5px 5px 10px gainsboro;
+    width: 600px; 
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  #line {
+    background: #fbd603;
+    width: 100%;
+    height: 7px;
+    margin-top: 6px;
+  }
+  h5 {
+      font-family:'Droid Serif', serif;
+      font-weight:400;
+      font-size:16pt;
+      color:#2c2c2c;
+      text-align:left;
+    }
+
+
+
+
     body {
       font-family: Helvetica, Arial;
     }
@@ -36,7 +101,6 @@
     }
 
     #chart {
-      height: 500px;
       font-size: 11px;
       width: 600px;
       margin: auto;
@@ -44,6 +108,9 @@
     }
 
     @media (min-width:1000px) {  
+      div#container {
+        width:950px;
+      }
       #chart {
         width:950px
       }
@@ -52,10 +119,29 @@
   </style>
 
 </head>
-
 <body>
+<div id="container">
+  <h1 class="highcharts-title"> Around one third of the bills introduced this session were passed </h1>
 
-  <div id="chart"/>
+  <text class="highcharts-subtitle" y="60">
+    <tspan>BY JAKE GLUCK</tspan>
+    <!-- ^^ PUT YOUR NAME HERE, TAKE CREDIT FOR YOUR COOL WORK ^^ -->
+    <tspan onclick="location.href=&quot;http://cnsmaryland.org&quot;"> | CAPITAL NEWS SERVICE</tspan>
+    <br>
+    <div id="line"></div>
+    <!--<span style="height:8px; font-size:4pt; background-color:#fbd603 ; color:#fbd603 ;">____________________________________________________________________________________________________________________________</span>-->
+  </text>
+  <h5>
+    A bill can be introduced through multiple ways: Democratic and Republican lawmakers, local House and Senate delegations, House and Senate committees. The Senate President and House Speaker are still individual lawmakers, but they oversee the agenda in their respective chambers. These bills are then assigned to committee; some make their way through the committee and onto a floor vote, while others fail to make it out of committee and never receive a vote.
+
+  </h5>
+  <div id="chart"></div>
+  <br>
+  <div id="source"><text><a href="https://legiscan.com/"><tspan>Source: LegiScan</tspan></a></text></div>
+      <!-- ^^ PUT YOUR SOURCE HERE AND LINK IT^^ -->
+
+</div>
+
   <script type="text/javascript">
 
     window.onload = justMake;
