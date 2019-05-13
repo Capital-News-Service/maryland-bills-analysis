@@ -150,14 +150,10 @@ div#container {
         <!--<span style="height:8px; font-size:4pt; background-color:#fbd603 ; color:#fbd603 ;">____________________________________________________________________________________________________________________________</span>-->
       </text>
       <h5>
-        A line connecting two legislators represents at least 15 co-sponsorships between the two delegates in the 2019 legislative session.
-        A co-sponsor is an additional lawmaker or lawmakers, aside from the primary sponsors, who sign on to voice their support for a piece of legislation.
-        Hover over a relationship to see the number of cos sponsorships.
-
-
+        Capital News Service analyzed every bill introduced during the 2019 General Assembly to find the Senate legislators who co-sponsored each other the most during the session. A line connecting two senators represents at least 15 co-sponsorships, total in either direction, between the two lawmakers, in the 2019 legislative session. Hover over a relationship to see the number of co-sponsorships.
       </h5>
       <svg id = "graphic" width="600" height="600" style="border:solid;"></svg>
-      <div id="source"><text><a href="https://legiscan.com/"><tspan>Source: LegiScan</tspan></a></text></div>
+      <div id="source"><text><a href="https://legiscan.com/"><tspan>Source: LegiScan</tspan></a> and a<a href="https://github.com/Capital-News-Service/maryland-bills-analysis"> Capital News Service analysis<tspan></tspan></a></text></div>
       <!-- ^^ PUT YOUR SOURCE HERE AND LINK IT^^ -->
 
     </div>
@@ -200,7 +196,7 @@ function makeGraphic(ifDestroy){
             .style("opacity", .8);
           tooltip.html("Delegate A: "+ d.source.id + 
                        "<br>Delegate B: " + d.target.id +
-                      "<br>Total Co Sponsorships: "  + d.value)
+                      "<br>Total co-sponsorships: "  + d.value)
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY + 10) + "px");
         })
