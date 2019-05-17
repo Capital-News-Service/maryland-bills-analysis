@@ -107,6 +107,9 @@
       border:solid;
     }
 
+    text{
+      visible:false;
+    }
     @media (min-width:1000px) {  
       div#container {
         width:950px;
@@ -315,7 +318,6 @@
             });
 
 
-
           var node = svg.append("g").selectAll(".node")
             .data(energy.nodes)
             .enter().append("g")
@@ -364,13 +366,45 @@
             });
 
           node.append("text")
-            .attr("x", -6)
+            .attr("x", function(d) {
+              our_width = d3.select("svg").style('width').trim();
+              if (document.documentElement.clientWidth > 1000) {
+                return (d.dx - 20);
+              }else{
+                if (d.x > 80){
+                  if (d.x > 150){
+                    console.log(d.x)
+                    if (d.x > 300){
+                       return (d.dx + 12);
+                    }else{
+                       return (d.dx + 37);
+                    }
+                  }else{
+                    return (d.dx + 53);
+                  }
+                
+                }else{
+                  return (d.dx - 20);
+                }
+              }
+              
+              
+            })
             .attr("y", function(d) {
-              return (d.dy / 2);
+               our_width = d3.select("svg").style('width').trim();
+              if (document.documentElement.clientWidth > 1000) {
+                return (d.dy/2);
+              }else{
+                if (d.x > 80){
+                return (d.dy + 10);
+              }else{
+                return (d.dy/2);
+              }
+              }
+              
             })
             .attr("dy", ".35em")
             .attr("text-anchor", "end")
-            .attr("transform", null)
             .text(function(d) {
               return d.name;
             })

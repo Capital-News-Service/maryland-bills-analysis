@@ -13,7 +13,7 @@
 {"name":"Senate Bills Introduced"},
 {"name":"House Final Vote"},
 {"name":"Senate Final Vote"},
-{"name":"Passed"}
+{"name":"Passed By Both"}
 ],
 "links":[
 {"source":0,"target":10,"value":50},
