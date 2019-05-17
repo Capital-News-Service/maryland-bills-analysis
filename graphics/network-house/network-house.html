@@ -165,15 +165,7 @@ div#container {
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
-function makeGraphic(ifDestroy){
-  if (ifDestroy){
-    // svg.selectAll("*").remove();
-    svg.attr("transform",
-      "translate(" + d3.event.translate + ")"+ " scale(" + d3.event.scale + ")");
-  }
-
-
-
+function makeGraphic(){
 
   svg.attr("viewBox", [-width / 2, -height / 2, width, height]);
 
@@ -334,16 +326,7 @@ function makeGraphic(ifDestroy){
   });
 }
 
-makeGraphic(false);
-
-window.onresize = resizeMaps;
-
-      function resizeMaps() {
-
-
-          // if (document.documentElement.clientWidth < 800) {
-          makeGraphic(true);
-      }
+makeGraphic();
 
 </script>
 </body>
