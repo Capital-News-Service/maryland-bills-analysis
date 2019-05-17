@@ -140,7 +140,7 @@ div#container {
 
 <body>
 <div id="container">
-      <h1 class="highcharts-title">House relationships centered around regional, committee ties and Republicans working with the House Speaker</h1>
+      <h1 class="highcharts-title">House relationships centered around regional, committee ties and Republicans working with the House speaker</h1>
 
       <text class="highcharts-subtitle" y="60">
         <tspan>BY JAKE GLUCK</tspan>
@@ -255,7 +255,7 @@ function makeGraphic(ifDestroy){
         .attr('y', 3);
 
     const simulation = d3.forceSimulation(graph.nodes)
-        .force("link", d3.forceLink(graph.links).id(d => d.id).distance(100))
+        .force("link", d3.forceLink(graph.links).id(d => d.id).distance(112))
         .force("charge", d3.forceManyBody().strength(-500))
         .force("x", d3.forceX().strength(.2))
         .force("y", d3.forceY().strength(.2));
